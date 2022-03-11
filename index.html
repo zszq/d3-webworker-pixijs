@@ -1,63 +1,67 @@
-
 <!doctype html>
 <html class="no-js" lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>d3-webworker-pixi</title>
-        <meta name="description" content="">
-        <meta name="theme-color" content="#000000">
-    </head>
-    <body>
-        <style>
-          body {
-            margin: 0;
-            overflow: hidden;
-            font-family: Helvetica, Arial, sans-serif;
-            color: #fff;
-          }
 
-          #title {
-            position: absolute;
-            left: 40px;
-            top: 25px;
-          }
+<head>
+  <meta charset="utf-8">
+  <title>d3-webworker-pixi</title>
+  <meta name="description" content="">
+  <meta name="theme-color" content="#000000">
+</head>
 
-          h1 {
-            font-weight: 300; font-size: 24px; margin-bottom: .5em;
-          }
+<body>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Helvetica, Arial, sans-serif;
+      color: #fff;
+    }
 
-          #info {
-            z-index: 1;
-            position: absolute;
-            left: 120px;
-            bottom: 30px;
-          }
+    #title {
+      position: absolute;
+      left: 40px;
+      top: 25px;
+    }
 
-          a {
-            color: #fff;
-          }
+    h1 {
+      font-weight: 300;
+      font-size: 24px;
+      margin-bottom: .5em;
+    }
 
-          .stats-title {
-            font-size: 9px;
-            font-weight: bold;
-            padding: 2px 3px;
-            background-color: #000;
-            user-select: none;
-            pointer-events: none;
-          }
+    #info {
+      z-index: 1;
+      position: absolute;
+      left: 120px;
+      bottom: 30px;
+    }
 
-        </style>
-        <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=default"></script>
-        <script src="https://d3js.org/d3.v5.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.3.0/pixi.min.js"></script>
+    a {
+      color: #fff;
+    }
 
-        <script src="js/index.js" type="module"></script>
+    .stats-title {
+      font-size: 9px;
+      font-weight: bold;
+      padding: 2px 3px;
+      background-color: #000;
+      user-select: none;
+      pointer-events: none;
+    }
+  </style>
+  <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=default"></script>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/6.2.2/browser/pixi.js"></script>
 
-        <div id="title">
-    			<h1>d3 - web worker - pixi.js</h1>
-    			<p></p>
-    		</div>
+  <script src="js/index.js" type="module"></script>
 
-        <div id="info"><a href="https://github.com/markuslerner/d3-webworker-pixijs" target="_blank" rel="noopener">Source</a></div>
-    </body>
+  <div id="title">
+    <h1>d3 - web worker - pixi.js</h1>
+    <p></p>
+  </div>
+
+  <div id="info"><a href="https://github.com/markuslerner/d3-webworker-pixijs" target="_blank" rel="noopener">Source</a>
+  </div>
+</body>
+
 </html>

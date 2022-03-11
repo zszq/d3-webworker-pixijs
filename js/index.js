@@ -2,15 +2,13 @@
 // https://bl.ocks.org/kirjavascript/dcafa2b3a53cbcc9c5de19b938b92119
 // https://observablehq.com/@zakjan/force-directed-graph-pixi
 
-import Stats from 'https://unpkg.com/stats.js@0.17.0/src/Stats.js';
+import Stats from "https://unpkg.com/stats.js@0.17.0/src/Stats.js";
 
-import {GUI} from 'https://unpkg.com/dat.gui@0.7.7/build/dat.gui.module.js';
+import { GUI } from "https://unpkg.com/dat.gui@0.7.7/build/dat.gui.module.js";
 
-import SmoothFollow from './SmoothFollow.js';
+import SmoothFollow from "./SmoothFollow.js";
 
-import { createRandomGraph, colour, hyper, multiply } from './graph-utils.js';
-
-
+import { createRandomGraph, colour, hyper, multiply } from "./graph-utils.js";
 
 const FORCE_LAYOUT_NODE_REPULSION_STRENGTH = 5;
 const NODE_RADIUS = 2.5;
@@ -61,55 +59,65 @@ function createStats() {
   renderStats = new Stats();
   document.body.appendChild(renderStats.dom);
   var title = document.createElement("div");
-  title.className = 'stats-title';
+  title.className = "stats-title";
   title.appendChild(document.createTextNode("Renderer"));
   renderStats.dom.insertBefore(title, renderStats.dom.childNodes[0]);
-  renderStats.dom.style.left = '0px';
-  renderStats.dom.style.right = 'auto';
-  renderStats.dom.style.top = 'auto';
-  renderStats.dom.style.bottom = '0px';
+  renderStats.dom.style.left = "0px";
+  renderStats.dom.style.right = "auto";
+  renderStats.dom.style.top = "auto";
+  renderStats.dom.style.bottom = "0px";
 
   workerStats = new Stats();
-  document.body.appendChild( workerStats.dom );
+  document.body.appendChild(workerStats.dom);
   var title = document.createElement("div");
   title.appendChild(document.createTextNode("Worker"));
-  title.className = 'stats-title';
+  title.className = "stats-title";
   workerStats.dom.insertBefore(title, workerStats.dom.childNodes[0]);
-  workerStats.dom.style.left = 'auto';
-  workerStats.dom.style.right = '0px';
-  workerStats.dom.style.top = 'auto';
-  workerStats.dom.style.bottom = '0px';
-  workerStats.dom.style.display = params.useWebWorker ? 'block' : 'none';
-
+  workerStats.dom.style.left = "auto";
+  workerStats.dom.style.right = "0px";
+  workerStats.dom.style.top = "auto";
+  workerStats.dom.style.bottom = "0px";
+  workerStats.dom.style.display = params.useWebWorker ? "block" : "none";
 }
 
 function createGUI() {
   const gui = new GUI();
   // gui.close();
 
-  gui.add(params, 'numNodes', 1, 20000).name('num nodes').onChange(updateNodesAndLinks);
-  gui.add(params, 'numLinks', 0, 20000).name('num links').onChange(updateNodesAndLinks);
-  gui.add(params, 'numInterations', 1, 100).name('num iterations');
-  gui.add(params, 'useWebWorker').name('use web worker').onChange(function() {
-    if(params.useWebWorker) {
-      updateNodesFromBuffer();
-      // simulation.stop();
-    } else {
-      // simulation.restart();
-    }
-    workerStats.dom.style.display = params.useWebWorker ? 'block' : 'none';
-  });
-  gui.add(params, 'pauseSimulation').name('pause simulation').onChange(function() {
-    if(!params.pauseSimulation && params.useWebWorker) {
-      updateNodesFromBuffer();
-    }
+  gui
+    .add(params, "numNodes", 1, 20000)
+    .name("num nodes")
+    .onChange(updateNodesAndLinks);
+  gui
+    .add(params, "numLinks", 0, 20000)
+    .name("num links")
+    .onChange(updateNodesAndLinks);
+  gui.add(params, "numInterations", 1, 100).name("num iterations");
+  gui
+    .add(params, "useWebWorker")
+    .name("use web worker")
+    .onChange(function () {
+      if (params.useWebWorker) {
+        updateNodesFromBuffer();
+        // simulation.stop();
+      } else {
+        // simulation.restart();
+      }
+      workerStats.dom.style.display = params.useWebWorker ? "block" : "none";
+    });
+  gui
+    .add(params, "pauseSimulation")
+    .name("pause simulation")
+    .onChange(function () {
+      if (!params.pauseSimulation && params.useWebWorker) {
+        updateNodesFromBuffer();
+      }
 
-    workerStats.dom.style.display = !params.pauseSimulation && params.useWebWorker ? 'block' : 'none';
-
-  });
-  gui.add(params, 'interpolatePositions').name('interpolate');
-  gui.add(params, 'drawLines').name('draw lines');
-
+      workerStats.dom.style.display =
+        !params.pauseSimulation && params.useWebWorker ? "block" : "none";
+    });
+  gui.add(params, "interpolatePositions").name("interpolate");
+  gui.add(params, "drawLines").name("draw lines");
 }
 
 function createRenderer() {
@@ -126,11 +134,18 @@ function createRenderer() {
   // const { renderer, stage } = app;
 
   // Renderer seems to be faster than using PIXI.Application:
-  renderer = PIXI.autoDetectRenderer({ autoDensity: true, antialias: true, width, height, backgroundColor: 0x000000, resolution: window.devicePixelRatio || 1 });
+  renderer = PIXI.autoDetectRenderer({
+    autoDensity: true,
+    antialias: true,
+    width,
+    height,
+    backgroundColor: 0x000000,
+    resolution: window.devicePixelRatio || 1,
+  });
   document.body.appendChild(renderer.view);
   stage = new PIXI.Container();
 
-  window.addEventListener("resize", function() {
+  window.addEventListener("resize", function () {
     width = window.innerWidth;
     height = window.innerHeight;
     renderer.resize(width, height);
@@ -143,7 +158,6 @@ function createRenderer() {
   linksGfx = new PIXI.Graphics();
   linksGfx.alpha = 0.6;
   container.addChild(linksGfx);
-
 }
 
 function init() {
@@ -154,7 +168,6 @@ function init() {
   createMainThreadSimulation();
 
   requestAnimationFrame(render);
-
 }
 
 function render() {
@@ -192,7 +205,7 @@ function render() {
 // }
 
 function updateNodesAndLinks() {
-  graph.nodes.forEach(node => {
+  graph.nodes.forEach((node) => {
     const gfx = gfxIDMap[node.id];
     container.removeChild(gfx);
     gfx.destroy();
@@ -210,8 +223,10 @@ function updateNodesAndLinks() {
   updateWorkerGraph();
 
   simulation.nodes(graph.nodes);
-  simulation.force("link", d3.forceLink(graph.links).id(d => d.id));
-
+  simulation.force(
+    "link",
+    d3.forceLink(graph.links).id((d) => d.id)
+  );
 }
 
 function createGraph() {
@@ -220,16 +235,21 @@ function createGraph() {
 
 function createPixiGraphics() {
   // Create pre-rendered texture to improve performance (about double):
-  const brt = new PIXI.BaseRenderTexture((NODE_RADIUS * 2 + 2.0), (NODE_RADIUS * 2 + 2.0), PIXI.SCALE_MODES.LINEAR, window.devicePixelRatio);
+  const brt = new PIXI.BaseRenderTexture(
+    NODE_RADIUS * 2 + 2.0,
+    NODE_RADIUS * 2 + 2.0,
+    PIXI.SCALE_MODES.LINEAR,
+    window.devicePixelRatio
+  );
   const texture = new PIXI.RenderTexture(brt);
   const graphics = new PIXI.Graphics();
   graphics.lineStyle(1.0, 0x000000);
-  graphics.beginFill(0xFFFFFF);
+  graphics.beginFill(0xffffff);
   graphics.drawCircle(0, 0, NODE_RADIUS);
-  graphics.position.x = (NODE_RADIUS + 1.0);
-  graphics.position.y = (NODE_RADIUS + 1.0);
+  graphics.position.x = NODE_RADIUS + 1.0;
+  graphics.position.y = NODE_RADIUS + 1.0;
   // graphics.scale.x = graphics.scale.y = 1.0;
-  renderer.render(graphics, texture);
+  renderer.render(graphics, { renderTexture: texture });
 
   graph.nodes.forEach((node) => {
     // const gfx = new PIXI.Graphics();
@@ -243,10 +263,10 @@ function createPixiGraphics() {
     gfx.buttonMode = true;
     gfx.dragging = false;
     gfx.hitArea = new PIXI.Circle(0, 0, NODE_HIT_RADIUS);
-    gfx.on('pointerdown', onDragStart);
-    gfx.on('pointerup', onDragEnd);
-    gfx.on('pointerupoutside', onDragEnd);
-    gfx.on('pointermove', onDragMove);
+    gfx.on("pointerdown", onDragStart);
+    gfx.on("pointerup", onDragEnd);
+    gfx.on("pointerupoutside", onDragEnd);
+    gfx.on("pointermove", onDragMove);
     gfx.smoothFollowX = new SmoothFollow();
     gfx.smoothFollowY = new SmoothFollow();
     gfx.smoothFollowX.set(width / 2);
@@ -373,11 +393,11 @@ function createWebworker() {
     }
   `;
 
-  const workerBlob = new Blob([workerCode], { type: 'application/javascript' });
-  const workerUrl = URL.createObjectURL(workerBlob)
+  const workerBlob = new Blob([workerCode], { type: "application/javascript" });
+  const workerUrl = URL.createObjectURL(workerBlob);
   worker = new Worker(workerUrl);
 
-  worker.onmessage = event => {
+  worker.onmessage = (event) => {
     // worker.terminate();
     // URL.revokeObjectURL(workerUrl);
 
@@ -385,27 +405,25 @@ function createWebworker() {
 
     nodesBuffer = event.data.nodesBuffer;
 
-    if(type === 'updateMainBuffers') {
+    if (type === "updateMainBuffers") {
       // console.log(nodesBuffer);
       // graph = event.data;
 
       updateNodesFromBuffer();
 
-    // } else if(type === 'updateMainSharedBuffer') {
-    //   updateNodesFromSharedBuffer();
-
+      // } else if(type === 'updateMainSharedBuffer') {
+      //   updateNodesFromSharedBuffer();
     }
-
   };
 
   createWorkerSimulation();
-
 }
 
 function createWorkerSimulation() {
-    sendTime = Date.now();
-    worker.postMessage({
-      type: 'createSimulation',
+  sendTime = Date.now();
+  worker.postMessage(
+    {
+      type: "createSimulation",
       graph,
       options: {
         alpha: ALPHA,
@@ -417,25 +435,28 @@ function createWorkerSimulation() {
         height,
       },
       nodesBuffer,
-    }, [nodesBuffer.buffer]);
-
+    },
+    [nodesBuffer.buffer]
+  );
 }
 
 function updateWorkerBuffers() {
-  if(!params.useWebWorker || params.pauseSimulation) return;
+  if (!params.useWebWorker || params.pauseSimulation) return;
 
   sendTime = Date.now();
-  worker.postMessage({
-    type: 'updateWorkerBuffers',
-    options: {
-      iterations: params.numInterations,
-      nodeRepulsionStrength: FORCE_LAYOUT_NODE_REPULSION_STRENGTH,
-      width,
-      height,
+  worker.postMessage(
+    {
+      type: "updateWorkerBuffers",
+      options: {
+        iterations: params.numInterations,
+        nodeRepulsionStrength: FORCE_LAYOUT_NODE_REPULSION_STRENGTH,
+        width,
+        height,
+      },
+      nodesBuffer,
     },
-    nodesBuffer,
-  }, [nodesBuffer.buffer]);
-
+    [nodesBuffer.buffer]
+  );
 }
 
 // function updateWorkerSharedBuffer() {
@@ -457,67 +478,67 @@ function updateWorkerBuffers() {
 
 function updateWorkerGraph() {
   worker.postMessage({
-    type: 'updateWorkerGraph',
+    type: "updateWorkerGraph",
     graph,
   });
-
 }
 
 function updateWorkerNodePositions() {
   worker.postMessage({
-    type: 'updateWorkerNodePositions',
+    type: "updateWorkerNodePositions",
     nodes: graph.nodes,
   });
-
 }
 
 function createMainThreadSimulation() {
   const { nodes, links } = graph;
 
-  simulation = d3.forceSimulation()
+  simulation = d3
+    .forceSimulation()
     .nodes(nodes)
-    .force("link", d3.forceLink(links).id(d => d.id))
+    .force(
+      "link",
+      d3.forceLink(links).id((d) => d.id)
+    )
     .alpha(ALPHA)
     .alphaDecay(ALPHA_DECAY)
-    .alphaTarget(ALPHA_TARGET)
-    ;
+    .alphaTarget(ALPHA_TARGET);
 
-  if(params.useWebWorker) simulation.stop();
+  if (params.useWebWorker) simulation.stop();
 
   updateMainThreadSimulation();
-
 }
 
 function updateMainThreadSimulation() {
   // const { nodes, links } = graph;
 
   simulation
-    .force("charge", d3.forceManyBody().strength(-FORCE_LAYOUT_NODE_REPULSION_STRENGTH))
-    .force('center', d3.forceCenter(width / 2, height / 2))
+    .force(
+      "charge",
+      d3.forceManyBody().strength(-FORCE_LAYOUT_NODE_REPULSION_STRENGTH)
+    )
+    .force("center", d3.forceCenter(width / 2, height / 2))
     // .tick(FORCE_LAYOUT_ITERATIONS)
     // .on('tick', updatePositionsFromMainThreadSimulation)
-    .stop()
-    ;
-
+    .stop();
 }
 
 function updateNodesFromBuffer() {
   // Update nodes from buffer
-  for(var i = 0; i < graph.nodes.length; i++) {
+  for (var i = 0; i < graph.nodes.length; i++) {
     const node = graph.nodes[i];
-    if(draggingNode !== node) {
+    if (draggingNode !== node) {
       // const gfx = gfxMap.get(node);
       const gfx = gfxIDMap[node.id];
       // gfx.position = new PIXI.Point(x, y);
 
-      if(params.interpolatePositions) {
-        gfx.smoothFollowX.set(node.x = nodesBuffer[i * 2 + 0]);
-        gfx.smoothFollowY.set(node.y = nodesBuffer[i * 2 + 1]);
+      if (params.interpolatePositions) {
+        gfx.smoothFollowX.set((node.x = nodesBuffer[i * 2 + 0]));
+        gfx.smoothFollowY.set((node.y = nodesBuffer[i * 2 + 1]));
       } else {
         gfx.position.x = node.x = nodesBuffer[i * 2 + 0];
         gfx.position.y = node.y = nodesBuffer[i * 2 + 1];
       }
-
     }
   }
 
@@ -547,14 +568,13 @@ function updateNodesFromBuffer() {
 
   // If the worker was faster than the time step (dt seconds), we want to delay the next timestep
   let delay = delta * 1000 - (Date.now() - sendTime);
-  if(delay < 0) {
-      delay = 0;
+  if (delay < 0) {
+    delay = 0;
   }
   setTimeout(updateWorkerBuffers, delay);
 
   workerStats.end();
   workerStats.begin();
-
 }
 
 // function updateNodesFromSharedBuffer() {
@@ -589,27 +609,28 @@ function updateNodesFromBuffer() {
 //
 // }
 
-function updatePositionsFromMainThreadSimulation() { // only when not using web worker
+function updatePositionsFromMainThreadSimulation() {
+  // only when not using web worker
   // stats.begin();
-  if(params.useWebWorker) return;
+  if (params.useWebWorker) return;
 
-  if(graph) {
-    if(!params.pauseSimulation) {
+  if (graph) {
+    if (!params.pauseSimulation) {
       simulation.tick(params.numInterations);
     }
 
     graph.nodes.forEach((node) => {
-        let { x, y } = node;
-        const gfx = gfxMap.get(node);
-        // const gfx = gfxIDMap[node.id];
-        // gfx.position = new PIXI.Point(x, y);
-        if(params.interpolatePositions) {
-          gfx.smoothFollowX.set(node.x);
-          gfx.smoothFollowY.set(node.y);
-        } else {
-          gfx.position.x = node.x;
-          gfx.position.y = node.y;
-        }
+      let { x, y } = node;
+      const gfx = gfxMap.get(node);
+      // const gfx = gfxIDMap[node.id];
+      // gfx.position = new PIXI.Point(x, y);
+      if (params.interpolatePositions) {
+        gfx.smoothFollowX.set(node.x);
+        gfx.smoothFollowY.set(node.y);
+      } else {
+        gfx.position.x = node.x;
+        gfx.position.y = node.y;
+      }
     });
 
     // linksGfx.clear();
@@ -636,13 +657,13 @@ function updatePositionsFromMainThreadSimulation() { // only when not using web 
 }
 
 function updateInterpolatedPositions() {
-  if(!graph || !params.interpolatePositions) return;
+  if (!graph || !params.interpolatePositions) return;
 
   // stats.begin();
 
-  for(var i = 0; i < graph.nodes.length; i++) {
+  for (var i = 0; i < graph.nodes.length; i++) {
     const node = graph.nodes[i];
-    if(draggingNode !== node) {
+    if (draggingNode !== node) {
       // const gfx = gfxMap.get(node);
       const gfx = gfxIDMap[node.id];
       // gfx.position = new PIXI.Point(x, y);
@@ -659,25 +680,23 @@ function updateInterpolatedPositions() {
 function drawLines() {
   linksGfx.clear();
 
-  if(!graph || !params.drawLines) return;
+  if (!graph || !params.drawLines) return;
 
   graph.links.forEach((link) => {
-    const source = gfxIDMap[link.source.id || link.source];
-    const target = gfxIDMap[link.target.id || link.target];
+    const source = gfxIDMap[link.source.id || link.source];
+    const target = gfxIDMap[link.target.id || link.target];
 
-    if(source && target) {
+    if (source && target) {
       // linksGfx.lineStyle(Math.sqrt(link.value), 0x999999);
       linksGfx.lineStyle(1.0, 0x999999);
       linksGfx.moveTo(source.x, source.y);
       linksGfx.lineTo(target.x, target.y);
     }
-
   });
 
   linksGfx.endFill();
 
   // app.renderer.render(container);
-
 }
 
 const moveNode = (nodeData, point) => {
@@ -685,7 +704,6 @@ const moveNode = (nodeData, point) => {
 
   gfx.x = nodeData.x = point.x;
   gfx.y = nodeData.y = point.y;
-
 };
 
 function onDragStart(event) {
@@ -707,21 +725,27 @@ function onDragStart(event) {
 }
 
 function onDragMove() {
-  if(this.dragging && draggingNode) {
-      const newPosition = this.data.getLocalPosition(this.parent);
-      draggingNode.fx = draggingNode.x = this.x = newPosition.x - this.dragOffset.x;
-      draggingNode.fy = draggingNode.y = this.y = newPosition.y - this.dragOffset.y;
+  if (this.dragging && draggingNode) {
+    const newPosition = this.data.getLocalPosition(this.parent);
+    draggingNode.fx =
+      draggingNode.x =
+      this.x =
+        newPosition.x - this.dragOffset.x;
+    draggingNode.fy =
+      draggingNode.y =
+      this.y =
+        newPosition.y - this.dragOffset.y;
   }
 }
 
 function onDragEnd() {
-  if(draggingNode) {
-    if(params.interpolatePositions) {
+  if (draggingNode) {
+    if (params.interpolatePositions) {
       this.smoothFollowX.reset(this.position.x);
       this.smoothFollowY.reset(this.position.y);
     }
 
-    if(params.useWebWorker) {
+    if (params.useWebWorker) {
       updateWorkerNodePositions();
     }
 
@@ -740,4 +764,4 @@ function onDragEnd() {
   // app.renderer.plugins.interaction.off('mousemove', appMouseMove);
   // enable viewport dragging
   // viewport.pause = false;
-};
+}
